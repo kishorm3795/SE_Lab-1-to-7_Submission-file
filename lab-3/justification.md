@@ -2,7 +2,7 @@
 
 **System:** Patient Health Record Consent Management System (Problem Statement #13)
 
-**Name:** Mohammed Tahir Siddique | **SRN:** PES2UG24AM092
+**Name:** Pavan Kishor M | **SRN:** PES2UG24AM111
 
 ## Architecture Selection
 
