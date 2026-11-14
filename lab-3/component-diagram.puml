@@ -1,0 +1,73 @@
+@startuml component-diagram
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam component {
+  BackgroundColor #EEF4FF
+  BorderColor #1D4ED8
+  ArrowColor #1F2937
+}
+skinparam interface {
+  BackgroundColor #FFFFFF
+  BorderColor #1F2937
+}
+skinparam package {
+  BorderColor #1F2937
+}
+
+title Patient Health Record Consent Management System - Component Diagram (Layered Architecture)
+
+package "Presentation Layer" {
+  component "Patient Portal" <<component>> as PP
+  component "Clinic Portal" <<component>> as CP
+}
+
+package "Business Layer" {
+  component "Consent Manager" <<component>> as CM
+  component "Record Access Service" <<component>> as RAS
+  component "Notification Service" <<component>> as NS
+  component "Audit Logger" <<component>> as AL
+
+  interface " " as ICV
+  interface "INotification\n(method call)" as INO
+  interface "IAuditLog\n(method call)" as IAL
+}
+
+package "Data Layer" {
+  interface "IConsentStore\n(SQL queries)" as ICS
+  interface "IRecordStore\n(SQL queries)" as IRS
+  interface "IAuditStore\n(append-only writes)" as IAS
+
+  component "Consent Repository" <<component>> as CR
+  component "Health Record Repository" <<component>> as HR
+  component "Audit Trail Store" <<component>> as ATS
+}
+
+interface "IConsentManagement\n(REST API)" as ICM
+interface "IRecordAccess\n(REST API)" as IRA
+
+' Presentation layer requires business layer interfaces
+PP --( ICM
+CP --( ICM
+CP --( IRA
+ICM -- CM
+IRA -- RAS
+
+' Interfaces inside the business layer
+RAS -left-( ICV : IConsentValidation\n(in-process call)
+ICV -left- CM
+CM --( INO
+INO -- NS
+CM --( IAL
+RAS --( IAL
+IAL -- AL
+RAS ..> NS : <<use>>
+
+' Business layer requires data layer interfaces
+CM --( ICS
+ICS -- CR
+RAS --( IRS
+IRS -- HR
+AL --( IAS
+IAS -- ATS
+@enduml
